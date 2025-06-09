@@ -29,10 +29,11 @@ public class ItemController {
     public ItemController(ItemService itemService) {
         this.itemService = itemService;
     }
-
+    
+    // -------------------- Synchronous Endpoints --------------------
     @GetMapping("/{id}")
     public ResponseEntity<Item> getItem(@PathVariable Long id) {
-        Item item = itemService.getItemById(id);
+        Item item = itemService.getItemById(id).orElse(null);
         return item != null ? ResponseEntity.ok(item) : ResponseEntity.notFound().build();
     }
 
@@ -81,7 +82,7 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public CompletableFuture<ResponseEntity<Item>> searchItemsAsync(@RequestParam String keyword) {
+    public CompletableFuture<ResponseEntity<List<Item>>> searchItemsAsync(@RequestParam String keyword) {
         return itemService.searchItemsAsync(keyword)
                 .thenApply(ResponseEntity::ok);
     }
